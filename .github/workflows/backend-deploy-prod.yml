@@ -1,0 +1,26 @@
+name: CD
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies and build
+        run: bun install
+
+      - name: Tests
+        run: bun run test --passWithNoTests
+
+      - name: Render Deployment
+        run: curl ${{ secrets.RENDER_DEPLOYMENT_PRD_URL }}
