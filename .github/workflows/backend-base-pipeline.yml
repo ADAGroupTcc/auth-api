@@ -21,3 +21,9 @@ jobs:
 
       - name: Tests
         run: bun run test --passWithNoTests
+<<<<<<< HEAD
+=======
+        
+      - name: Render Deployment
+        run: curl ${{ secrets.RENDER_DEPLOYMENT_HOM_URL }}
+>>>>>>> main
