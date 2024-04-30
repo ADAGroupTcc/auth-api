@@ -15,7 +15,7 @@ export class AuthService {
         expirationDate
       };
       const token = await this.jwtService.signAsync(payload);
-      return { token };
+      return { token: btoa(token) };
     } else {
       throw new UnauthorizedException("invalid token");
     }
