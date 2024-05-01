@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { User } from './dto/user.dto';
 @Injectable()
@@ -56,7 +56,7 @@ export class AuthService {
   async findUser(cpf: number): Promise<User[]> {
     try {
       const { data } = await firstValueFrom(
-        this.httpService.get<{ users: User[], next: number }>(`http://localhost:8001/v1/users?cpf=${cpf}`).pipe(
+        this.httpService.get<{ users: User[], next: number }>(`${process.env.USER_API_BASE_URL}/v1/users?cpf=${cpf}`).pipe(
           catchError((error: AxiosError) => {
             this.logger.warn('An error occurred while fetching user data:', error);
             throw new UnauthorizedException()
