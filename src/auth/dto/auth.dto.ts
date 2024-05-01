@@ -8,7 +8,7 @@ export class SessionDto {
 }
 
 export class AuthDto {
-  userId: string;
+  cpf: number;
   expirationDate: number;
 }
 
