@@ -1,13 +1,10 @@
-import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AxiosError } from 'axios';
-import { catchError, firstValueFrom } from 'rxjs';
 import { User } from './dto/user.dto';
 @Injectable()
 export class AuthService {
   private readonly logger: Logger = new Logger(AuthService.name);
-  constructor(private readonly jwtService: JwtService, private readonly httpService: HttpService) { }
+  constructor(private readonly jwtService: JwtService) { }
 
   async session(apiToken: string, expirationDate: number, cpf: number) {
     const currentUnixTime = Math.floor(Date.now() / 1000);
@@ -55,17 +52,16 @@ export class AuthService {
 
   async findUser(cpf: number): Promise<User[]> {
     try {
-      const { data } = await firstValueFrom(
-        this.httpService.get<{ users: User[], next: number }>(`${process.env.USER_API_BASE_URL}/v1/users?cpf=${cpf}`).pipe(
-          catchError((error: AxiosError) => {
-            this.logger.warn('An error occurred while fetching user data:', error);
-            throw new UnauthorizedException()
-          }),
-        ),
-      );
+      const response = await fetch(`${process.env.USER_API_BASE_URL}/v1/users?cpf=${cpf}`)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data: { users: User[], next: number } = await response.json()
       return data.users
     } catch (error) {
-      throw error
+      this.logger.error(error)
+
+      throw new UnauthorizedException();
     }
   }
 }

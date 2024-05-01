@@ -5,14 +5,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
 @Module({
-  imports: [HttpModule.registerAsync({
-    imports: [ConfigModule],
-    useFactory: async (configService: ConfigService) => ({
-      timeout: configService.get('HTTP_TIMEOUT'),
-      maxRedirects: configService.get('HTTP_MAX_REDIRECTS'),
-    }),
-    inject: [ConfigService],
-  })],
+  imports: [],
   controllers: [AuthController],
   providers: [AuthService]
 })
