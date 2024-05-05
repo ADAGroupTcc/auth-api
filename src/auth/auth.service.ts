@@ -12,7 +12,7 @@ export class AuthService {
       throw new UnauthorizedException("expiration date is in the past");
     }
     const user = await this.findUser(userId)
-    if (user.length != 1) {
+    if (!user) {
       throw new UnauthorizedException();
     }
     const payload = {
@@ -25,7 +25,7 @@ export class AuthService {
 
   async auth(userId: string, token: string) {
     const user = await this.findUser(userId)
-    if (user.length != 1) {
+    if (!user) {
       throw new UnauthorizedException();
     }
     const payload: any = await this.jwtService.verifyAsync(atob(token));
@@ -38,14 +38,14 @@ export class AuthService {
     delete payload.iat;
   }
 
-  async findUser(userId: string): Promise<User[]> {
+  async findUser(userId: string): Promise<User> {
     try {
       const response = await fetch(`${process.env.USER_API_BASE_URL}/v1/users/${userId}`)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data: { users: User[], next: number } = await response.json()
-      return data.users
+      const user: User = await response.json()
+      return user
     } catch (error) {
       this.logger.error(error)
       throw new UnauthorizedException();
