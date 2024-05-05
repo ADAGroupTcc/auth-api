@@ -23,7 +23,7 @@ export class AuthService {
     return { token: btoa(token) };
   }
 
-  async auth(userId: number, token: string) {
+  async auth(userId: string, token: string) {
     const user = await this.findUser(userId)
     if (user.length != 1) {
       throw new UnauthorizedException();
@@ -38,9 +38,9 @@ export class AuthService {
     delete payload.iat;
   }
 
-  async findUser(userId: number): Promise<User[]> {
+  async findUser(userId: string): Promise<User[]> {
     try {
-      const response = await fetch(`${process.env.USER_API_BASE_URL}/v1/users?userId=${userId}`)
+      const response = await fetch(`${process.env.USER_API_BASE_URL}/v1/users/${userId}`)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
