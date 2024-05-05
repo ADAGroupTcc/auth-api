@@ -6,25 +6,25 @@ export class AuthService {
   private readonly logger: Logger = new Logger(AuthService.name);
   constructor(private readonly jwtService: JwtService) { }
 
-  async session(expirationDate: number, cpf: number) {
+  async session(expirationDate: number, userId: string) {
     const currentUnixTime = Math.floor(Date.now() / 1000);
     if (expirationDate < currentUnixTime) {
       throw new UnauthorizedException("expiration date is in the past");
     }
-    const user = await this.findUser(cpf)
+    const user = await this.findUser(userId)
     if (user.length != 1) {
       throw new UnauthorizedException();
     }
     const payload = {
-      cpf,
+      userId,
       expirationDate
     };
     const token = await this.jwtService.signAsync(payload);
     return { token: btoa(token) };
   }
 
-  async auth(cpf: number, token: string) {
-    const user = await this.findUser(cpf)
+  async auth(userId: number, token: string) {
+    const user = await this.findUser(userId)
     if (user.length != 1) {
       throw new UnauthorizedException();
     }
@@ -32,15 +32,15 @@ export class AuthService {
     if (payload.expirationDate <= Math.floor(Date.now() / 1000)) {
       throw new UnauthorizedException();
     }
-    if (payload.cpf !== cpf) {
+    if (payload.userId !== userId) {
       throw new UnauthorizedException();
     }
     delete payload.iat;
   }
 
-  async findUser(cpf: number): Promise<User[]> {
+  async findUser(userId: number): Promise<User[]> {
     try {
-      const response = await fetch(`${process.env.USER_API_BASE_URL}/v1/users?cpf=${cpf}`)
+      const response = await fetch(`${process.env.USER_API_BASE_URL}/v1/users?userId=${userId}`)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
