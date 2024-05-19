@@ -1,8 +1,6 @@
-name: CD
+# Depreciated
 
-on:
-  release:
-    types: [published]
+name: CD
 
 jobs:
   build:

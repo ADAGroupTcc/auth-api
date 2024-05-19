@@ -1,8 +1,6 @@
-name: CD
+# Depreciated
 
-on:
-  pull_request:
-    branches: ['main']
+name: CD
 
 jobs:
   build-and-test:
